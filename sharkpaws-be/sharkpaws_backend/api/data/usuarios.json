@@ -1,0 +1,43 @@
+{
+    "usuarios": [
+        {
+            "nombre": "Solum",
+            "apellido": "Angeles",
+            "email": "",
+            "mascota": "",
+            "direccion": ""
+        }, 
+
+        {
+            "nombre": "Billie",
+            "apellido": "Barid",
+            "email": "",
+            "mascota": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lucy",
+            "apellido": "Magne",
+            "email": "",
+            "mascota": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lilith",
+            "apellido": "Magne",
+            "email": "",
+            "mascota": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Yahvi",
+            "apellido": "Angeles",
+            "email": "",
+            "mascota": "",
+            "direccion": ""
+        }
+    ]
+}

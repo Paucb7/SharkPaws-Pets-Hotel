@@ -1,0 +1,43 @@
+{
+    "empleados": [
+        {
+            "nombre": "Solum",
+            "apellido": "Angeles",
+            "email": "",
+            "salario": "",
+            "direccion": ""
+        }, 
+
+        {
+            "nombre": "Billie",
+            "apellido": "Barid",
+            "email": "",
+            "salario": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lucy",
+            "apellido": "Magne",
+            "email": "",
+            "salario": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lilith",
+            "apellido": "Magne",
+            "email": "",
+            "salario": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Yahvi",
+            "apellido": "Angeles",
+            "email": "",
+            "salario": "",
+            "direccion": ""
+        }
+    ]
+}

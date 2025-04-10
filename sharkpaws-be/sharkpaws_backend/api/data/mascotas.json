@@ -1,0 +1,38 @@
+{ 
+    "mascotas": [
+        {
+            "nombre": "Solum",
+            "edad": "",
+            "dueno": "",
+            "direccion": ""
+        }, 
+
+        {
+            "nombre": "Billie",
+            "edad": "",
+            "dueno": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lucy",
+            "email": "",
+            "edad": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Lilith",
+            "edad": "",
+            "dueno": "",
+            "direccion": ""
+        },
+
+        {
+            "nombre": "Yahvi",
+            "edad": "",
+            "dueno": "",
+            "direccion": ""
+        }
+    ]
+}

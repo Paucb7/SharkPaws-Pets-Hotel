@@ -1,0 +1,24 @@
+{
+    "reservas": [
+        {
+            "nombreMascota": "Bein",
+            "tipo": "perro",
+            "fechaInicio": "2025-03-27",
+            "fechaFin": "2025-03-31",
+            "email": "SolumMA7@gmail.com",
+            "adicionales": [
+                "ba\u00f1o"
+            ]
+        },
+        {
+            "nombreMascota": "Shark",
+            "tipo": "perro",
+            "fechaInicio": "2025-03-26",
+            "fechaFin": "2025-03-27",
+            "email": "billiehastic@gmail.com",
+            "adicionales": [
+                "corte"
+            ]
+        }
+    ]
+}
