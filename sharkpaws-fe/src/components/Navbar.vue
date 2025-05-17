@@ -8,13 +8,33 @@
       <router-link to="/servicios" class="nav-item">Servicios</router-link>
       <router-link to="/contacto" class="nav-item">Contacto</router-link>
       <router-link to="/reservas" class="nav-item">Reservas</router-link>
+      
+      <!-- Si está autenticado, mostrar panel de usuario -->
+      <router-link v-if="authStore.isAuthenticated" to="/panel-usuario" class="nav-item">
+        <span class="user-icon">👤</span> Mi Panel
+      </router-link>
+      
+      <!-- Si no está autenticado, mostrar login/registro -->
+      <template v-else>
+        <router-link to="/login" class="nav-item">Iniciar Sesión</router-link>
+        <router-link to="/registro" class="nav-item register-btn">Registrarse</router-link>
+      </template>
     </div>
   </nav>
 </template>
 
 <script>
+import { useAuthStore } from '../stores/auth';
+
 export default {
-  name: 'Navbar'
+  name: 'Navbar',
+  setup() {
+    const authStore = useAuthStore();
+    
+    return {
+      authStore
+    };
+  }
 }
 </script>
 

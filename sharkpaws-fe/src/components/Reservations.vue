@@ -5,7 +5,16 @@
     </div>
     <div class="reservation-form">
       <h2>Reserva una estancia para tu mascota</h2>
-      <form @submit.prevent="submitForm" class="form-container">
+      
+      <div v-if="!authStore.isAuthenticated" class="auth-required">
+        <p>Para crear una reserva, es necesario tener una cuenta.</p>
+        <div class="auth-buttons">
+          <router-link to="/login?redirect=/reservas" class="auth-button login">Iniciar Sesión</router-link>
+          <router-link to="/registro" class="auth-button register">Crear Cuenta</router-link>
+        </div>
+      </div>
+      
+      <form v-else @submit.prevent="submitForm" class="form-container">
         <!-- Sección Dueño -->
         <div class="form-section">
           <h3>Datos del Dueño</h3>
@@ -17,6 +26,7 @@
               v-model="form.ownerName" 
               required
               placeholder="Ingresa tu nombre completo"
+              :disabled="authStore.user?.name"
             >
           </div>
           <div class="form-group">
@@ -27,6 +37,7 @@
               v-model="form.ownerEmail" 
               required
               placeholder="ejemplo@correo.com"
+              :disabled="authStore.user?.email"
             >
           </div>
         </div>
@@ -107,8 +118,19 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from '../stores/auth';
+import { useRouter } from 'vue-router';
+import PaymentGateway from './PaymentGateway.vue';
 
 export default {
+  components: {
+    PaymentGateway
+  },
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+    return { authStore };
+  },
   data() {
     return {
       minDate: new Date().toISOString().split('T')[0],
@@ -120,18 +142,58 @@ export default {
         startDate: '',
         endDate: '',
         services: []
-      }
+      },
+      showPaymentGateway: false,
+      reservationData: null
     };
+  },
+  mounted() {
+    // Si el usuario está autenticado, prellenar datos del formulario
+    if (this.authStore.user) {
+      this.form.ownerName = this.authStore.user.name || '';
+      this.form.ownerEmail = this.authStore.user.email || '';
+    }
   },
   methods: {
     async submitForm() {
+      try {
+        // Guardar los datos de la reserva temporalmente
+        this.reservationData = { ...this.form };
+        
+        // Redirigir a la pasarela de pago
+        this.$router.push({ 
+          name: 'payment',
+          params: { reservationData: JSON.stringify(this.reservationData) }
+        });
+      } catch (error) {
+        console.error("Error completo:", error.response?.data || error.message);
+        alert(`Error: ${error.response?.data?.message || error.message}`);
+      }
+    },
+    resetForm() {
+      // No resetear los datos del dueño si está autenticado
+      const ownerName = this.authStore.user ? this.authStore.user.name || '' : '';
+      const ownerEmail = this.authStore.user ? this.authStore.user.email || '' : '';
+      
+      this.form = {
+        ownerName,
+        ownerEmail,
+        petName: '',
+        petType: '',
+        startDate: '',
+        endDate: '',
+        services: []
+      };
+    },
+    async handlePaymentComplete(paymentDetails) {
       try {
         // Primero creamos la mascota
         const mascotaResponse = await axios.post(
           'http://localhost:8000/api/crear-mascota/',
           {
-            nombre: this.form.petName,
-            tipo: this.form.petType
+            nombre: this.reservationData.petName,
+            tipo: this.reservationData.petType,
+            usuario_id: this.authStore.user.id // Asociar con el usuario actual
           }
         );
 
@@ -140,29 +202,27 @@ export default {
           'http://localhost:8000/api/crear-reserva/',
           {
             mascota_id: mascotaResponse.data.id,
-            fecha_inicio: this.form.startDate,
-            fecha_fin: this.form.endDate,
-            servicios: this.form.services
+            fecha_inicio: this.reservationData.startDate,
+            fecha_fin: this.reservationData.endDate,
+            servicios: this.reservationData.services,
+            usuario_id: this.authStore.user.id, // Asociar con el usuario actual
+            detalles_pago: paymentDetails
           }
         );
 
-        alert(`¡Reserva exitosa! ID: ${reservaResponse.data.id}`);
+        this.showPaymentGateway = false;
         this.resetForm();
+        
+        // Redireccionar al panel de usuario
+        this.$router.push('/panel-usuario');
       } catch (error) {
-        console.error("Error completo:", error.response?.data || error.message);
+        console.error("Error al guardar la reserva:", error.response?.data || error.message);
         alert(`Error: ${error.response?.data?.message || error.message}`);
+        this.showPaymentGateway = false;
       }
     },
-    resetForm() {
-      this.form = {
-        ownerName: '',
-        ownerEmail: '',
-        petName: '',
-        petType: '',
-        startDate: '',
-        endDate: '',
-        services: []
-      };
+    cancelPayment() {
+      this.showPaymentGateway = false;
     }
   }
 };
@@ -282,6 +342,54 @@ input:focus, select:focus, textarea:focus {
 
 .submit-button:hover {
   background-color: #1a3340;
+}
+
+.auth-required {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  border-left: 4px solid #9CBEC2;
+}
+
+.auth-required p {
+  margin-bottom: 1.5rem;
+  color: #142733;
+  font-size: 1.1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.auth-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.auth-button.login {
+  background-color: #142733;
+  color: white;
+}
+
+.auth-button.login:hover {
+  background-color: #1a3340;
+}
+
+.auth-button.register {
+  background-color: white;
+  color: #142733;
+  border: 1px solid #142733;
+}
+
+.auth-button.register:hover {
+  background-color: #f8f9fa;
 }
 
 @media (max-width: 768px) {
